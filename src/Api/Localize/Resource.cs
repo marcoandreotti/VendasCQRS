@@ -1,6 +1,5 @@
-﻿namespace Api.Localize
+﻿namespace Api.Localize;
+
+public class Resource
 {
-    public class Resource
-    {
-    }
 }

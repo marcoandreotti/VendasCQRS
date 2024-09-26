@@ -19,6 +19,6 @@ public enum SaleItemStatusEnum
     [Display(Name = "Item criado")]
     ItemCriado = 1,
 
-    [Display(Name = "Item Cancelado")] 
+    [Display(Name = "Item Cancelado")]
     ItemCancelado = 2
 }

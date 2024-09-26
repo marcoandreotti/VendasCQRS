@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Extensions.Filters;
 using Domain.Intefaces;
 using Domain.Wrappers;
@@ -16,11 +18,13 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
 {
     private readonly IMapper _mapper;
     private readonly IMongoRepository<SaleEntity> _repository;
+    private readonly IMongoRepository<SalesHistoryEntity> _histRepository;
 
-    public CreateSaleCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository)
+    public CreateSaleCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository, IMongoRepository<SalesHistoryEntity> histRepository)
     {
         _mapper = mapper;
         _repository = repository;
+        _histRepository = histRepository;
     }
 
     public async Task<Response<Unit>> Handle(CreateSaleCommand request, CancellationToken cancellationToken)
@@ -41,6 +45,8 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
 
             await _repository.InsertOneAsync(entity);
 
+            await SaveSalesHistory(entity);
+
             Log.Information($"Compra Criada - {this.GetType().Name}");
 
         }
@@ -49,6 +55,19 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
             throw new ApiException(e.Message, true);
         }
         return new Response<Unit>(new Unit());
+    }
+
+    private async Task SaveSalesHistory(SaleEntity entity)
+    {
+        string msg = "...";
+
+        await _histRepository.InsertOneAsync(new SalesHistoryEntity
+        {
+            SaleId = entity.SaleId,
+            Message = msg,
+            UserName = "Usuário logado",
+            Status = ((SaleStatusEnum)entity.Status).GetDisplayName()
+        });
     }
 
     private async Task<string> GetCostumerNameOnCRM(long costumerId)

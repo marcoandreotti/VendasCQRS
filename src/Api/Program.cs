@@ -3,7 +3,6 @@ using CrossCutting.Configurations;
 using CrossCutting.Configurations.AppModel;
 using Domain;
 using Serilog;
-using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 

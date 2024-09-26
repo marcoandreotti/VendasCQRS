@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Exceptions;
-using Domain.Extensions;
 using Domain.Extensions.Filters;
 using Domain.Intefaces;
 using Domain.Wrappers;

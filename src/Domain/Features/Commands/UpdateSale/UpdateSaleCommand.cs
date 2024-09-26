@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities;
+using Domain.Enums;
 using Domain.Exceptions;
+using Domain.Extensions;
 using Domain.Extensions.Filters;
 using Domain.Intefaces;
 using Domain.Wrappers;
@@ -16,11 +18,13 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
 {
     private readonly IMapper _mapper;
     private readonly IMongoRepository<SaleEntity> _repository;
+    private readonly IMongoRepository<SalesHistoryEntity> _histRepository;
 
-    public UpdateSaleCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository)
+    public UpdateSaleCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository, IMongoRepository<SalesHistoryEntity> histRepository)
     {
         _mapper = mapper;
         _repository = repository;
+        _histRepository = histRepository;
     }
 
     public async Task<Response<Unit>> Handle(UpdateSaleCommand request, CancellationToken cancellationToken)
@@ -32,6 +36,7 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
             var entity = await ExistingEntity(request.SaleId);
 
             var id = entity.Id;
+            bool statusModified = (int)request.Status != entity.Status;
 
             entity = _mapper.Map<SaleEntity>(request);
             entity.Id = id;
@@ -44,6 +49,9 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
 
             await _repository.ReplaceOneAsync(entity);
 
+            if (statusModified)
+                await SaveSalesHistory(entity);
+
             Log.Information($"Compra Alterada - {this.GetType().Name}");
 
             return new Response<Unit>(new Unit());
@@ -52,6 +60,19 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
         {
             throw new ApiException(e.Message, true);
         }
+    }
+    private async Task SaveSalesHistory(SaleEntity entity)
+    {
+        string msg = "Status da compra alterado";
+
+        await _histRepository.InsertOneAsync(new SalesHistoryEntity
+        {
+            SaleId = entity.SaleId,
+            Message = msg,
+            UserName = "Usuário logado",
+            SaleDate = entity.SaleDate,
+            Status = ((SaleStatusEnum)entity.Status).GetDisplayName()
+        });
     }
 
     private async Task<string> GetCostumerNameOnCRM(long costumerId)

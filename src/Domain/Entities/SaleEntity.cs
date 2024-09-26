@@ -7,22 +7,22 @@ namespace Domain.Entities;
 [BsonCollection("Sale")]
 public class SaleEntity : Document
 {
-    [BsonElement("sale-id")] 
+    [BsonElement("sale-id")]
     public Int64 SaleId { get; set; }
 
-    [BsonElement("customer")] 
+    [BsonElement("customer")]
     public CustomerEntity Customer { get; set; }
 
-    [BsonElement("products")] 
+    [BsonElement("products")]
     public IEnumerable<ProductEntity> Products { get; set; }
 
-    [BsonElement("sale-date")] 
+    [BsonElement("sale-date")]
     public DateTime SaleDate { get; set; }
 
-    [BsonElement("total-sale-price")] 
+    [BsonElement("total-sale-price")]
     public decimal TotalSalePrice { get; set; }
 
-    [BsonElement("status")] 
-    public int? Status { get; set; }
+    [BsonElement("status")]
+    public int Status { get; set; }
 
 }

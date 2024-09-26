@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Domain.Contracts;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Extensions.Filters;
@@ -19,11 +18,13 @@ public class DeleteSaleByIdCommandHandler : IRequestHandler<DeleteSaleByIdComman
 {
     private readonly IMapper _mapper;
     private readonly IMongoRepository<SaleEntity> _repository;
+    private readonly IMongoRepository<SalesHistoryEntity> _histRepository;
 
-    public DeleteSaleByIdCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository)
+    public DeleteSaleByIdCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository, IMongoRepository<SalesHistoryEntity> histRepository)
     {
         _mapper = mapper;
         _repository = repository;
+        _histRepository = histRepository;
     }
 
     public async Task<Response<Unit>> Handle(DeleteSaleByIdCommand request, CancellationToken cancellationToken)
@@ -35,6 +36,8 @@ public class DeleteSaleByIdCommandHandler : IRequestHandler<DeleteSaleByIdComman
             var filter = request.SaleId.FindQueryBySaleId();
             await _repository.DeleteOneAsync(filter);
 
+            await SaveSalesHistory(request.SaleId);
+
             Log.Information($"Compra Excluida - {this.GetType().Name}");
 
             return new Response<Unit>(new Unit());
@@ -43,6 +46,19 @@ public class DeleteSaleByIdCommandHandler : IRequestHandler<DeleteSaleByIdComman
         {
             throw new ApiException(e.Message, true);
         }
+    }
+
+    private async Task SaveSalesHistory(Int64 saleId)
+    {
+        string msg = "Compra excluida";
+
+        await _histRepository.InsertOneAsync(new SalesHistoryEntity
+        {
+            SaleId = saleId,
+            Message = msg,
+            UserName = "Usuário logado",
+            Status = "Excluido"
+        });
     }
 }
 

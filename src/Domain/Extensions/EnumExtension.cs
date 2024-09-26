@@ -5,9 +5,9 @@ namespace Domain.Extensions;
 
 public static class EnumExtension
 {
-    public static T ToEnum<T>(this int? value)
+    public static T ToEnum<T>(this int value)
     {
-        return (T)Enum.Parse(typeof(T), value.GetValueOrDefault().ToString(), true);
+        return (T)Enum.Parse(typeof(T), value.ToString(), true);
     }
 
     public static T ToEnum<T>(this string value)

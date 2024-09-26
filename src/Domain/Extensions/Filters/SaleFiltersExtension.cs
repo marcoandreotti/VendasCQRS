@@ -19,7 +19,7 @@ public static class SaleFiltersExtension
     public static Expression<Func<SaleEntity, bool>> Filter(this GetAllSalesPaginationQuery query)
     {
         var filter = PredicateBuilder.New<SaleEntity>(true);
-        
+
         if (query.SaleId.HasValue)
         {
             filter = filter.And(item => item.SaleId == query.SaleId);

@@ -15,14 +15,14 @@ public sealed class MapperProfiles : Profile
         CreateMap<SaleContract, SaleEntity>()
             .ForMember(d => d.Id, o => o.MapFrom(s => ObjectId.GenerateNewId()))
             .ForMember(d => d.Status, o => o.MapFrom(s => (int)SaleStatusEnum.CompraCriada))
-            .ForMember(d => d.TotalSalePrice, o => 
+            .ForMember(d => d.TotalSalePrice, o =>
                 o.MapFrom(s => s.Products != null ? s.Products.Sum(x => x.Quantity * (x.UnitPrice - x.Discount)) : 0))
             .ForMember(d => d.Customer, o => o.MapFrom(s => new CustomerContract(s.CustomerId)));
 
         CreateMap<UpdateSaleCommand, SaleEntity>()
             .ForMember(d => d.Id, o => o.Ignore())
             .ForMember(d => d.Status, o => o.MapFrom(s => (int)SaleStatusEnum.CompraCriada))
-            .ForMember(d => d.TotalSalePrice, o => 
+            .ForMember(d => d.TotalSalePrice, o =>
                 o.MapFrom(s => s.Products != null ? s.Products.Sum(x => x.Quantity * (x.UnitPrice - x.Discount)) : 0))
             .ForMember(d => d.Customer, o => o.MapFrom(s => new CustomerContract(s.CustomerId)));
 
@@ -31,7 +31,7 @@ public sealed class MapperProfiles : Profile
 
         CreateMap<ProductContract, ProductEntity>()
             .ForMember(d => d.Status, o => o.MapFrom(s => (int)SaleItemStatusEnum.ItemCriado));
-        
+
         CreateMap<ProductQueryContract, ProductEntity>().ReverseMap()
             .ForMember(d => d.Status, o => o.MapFrom(s => (int)SaleItemStatusEnum.ItemCriado));
 

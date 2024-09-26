@@ -26,7 +26,7 @@ public class MongoRepository<TDocument> : IMongoRepository<TDocument> where TDoc
 
     private protected string GetCollectionName(Type documentType)
     {
-        return ((BsonCollectionAttribute)documentType.GetCustomAttributes(typeof(BsonCollectionAttribute),true).FirstOrDefault())?.CollectionName;
+        return ((BsonCollectionAttribute)documentType.GetCustomAttributes(typeof(BsonCollectionAttribute), true).FirstOrDefault())?.CollectionName;
     }
 
     public virtual IQueryable<TDocument> AsQueryable()
