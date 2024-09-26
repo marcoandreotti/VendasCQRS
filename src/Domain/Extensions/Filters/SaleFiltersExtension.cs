@@ -7,6 +7,15 @@ namespace Domain.Extensions.Filters;
 
 public static class SaleFiltersExtension
 {
+
+    public static Expression<Func<SaleEntity, bool>> FindQueryBySaleId(this long saleId)
+    {
+        var filter = PredicateBuilder.New<SaleEntity>(true);
+        filter = filter.And(item => item.SaleId == saleId);
+
+        return filter;
+    }
+
     public static Expression<Func<SaleEntity, bool>> Filter(this GetAllSalesPaginationQuery query)
     {
         var filter = PredicateBuilder.New<SaleEntity>(true);

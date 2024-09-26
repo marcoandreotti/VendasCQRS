@@ -12,6 +12,11 @@ public class SaleContract
 }
 
 
+public class SaleUpdateContract : SaleContract
+{
+    public SaleStatusEnum Status { get; set; }
+}
+
 public class SaleQueryContract
 {
     public Int64 SaleId { get; set; }

@@ -7,7 +7,6 @@ using Domain.Extensions.Filters;
 using Domain.Intefaces;
 using MediatR;
 using Serilog;
-using System.Diagnostics.Metrics;
 
 namespace Domain.Features.Queries;
 
