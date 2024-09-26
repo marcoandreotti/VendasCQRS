@@ -35,9 +35,13 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
         {
             var entity = await ExistingEntity(request.BuyId);
 
+            if (entity.Status == (int)BuyStatusEnum.CompraCancelada)
+                throw new ApiException("Compra cancelada, não é possível alterar");
+
             var id = entity.Id;
             bool statusModified = (int)request.Status != entity.Status;
             bool stautsProductModified = false;
+            bool productModified = false;
 
             if (request.CustomerId != entity.Customer.CustomerId)
                 entity.Customer.CustomerId = request.CustomerId;
@@ -56,9 +60,10 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
                         prodEntity.Quantity = prod.Quantity;
                         prodEntity.Discount = prod.Discount;
                         prodEntity.TotalPrice = prod.Quantity * (prod.UnitPrice - prod.Discount);
+                        productModified = true;
                     }
 
-                    if (prodEntity.Status != (int)prod.Status)
+                    if ((int)prod.Status > 0 && prodEntity.Status != (int)prod.Status)
                     {
                         stautsProductModified = true;
                         prodEntity.Status = (int)prod.Status;
@@ -67,16 +72,10 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
                 else
                 {
                     var prodE = _mapper.Map<ProductEntity>(prod);
-
                     entity.Products.Append(prodE);
+                    productModified = true;
                 }
             }
-
-
-            entity = _mapper.Map<BuyEntity>(request);
-            entity.Id = id;
-
-            entity.Status = (int)request.Status;
 
             //Aqui validaremos e carregaremos o nome do Cliente caso exita
             entity.Customer.Name = await GetCostumerNameOnCRM(request.CustomerId);
@@ -84,7 +83,11 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
             //Aqui validaremos os produtos e adicionaremos o nome caso exita
             entity.Products = await GetProductsNameOnCRM(entity.Products);
 
-            await _repository.ReplaceOneAsync(entity);
+            if (productModified)
+            {
+                entity.Status = (int)BuyStatusEnum.CompraAlterada;
+                await SaveHistory(entity, $"Produtos alterados");
+            }
 
             if (stautsProductModified)
             {
@@ -92,20 +95,21 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
                 if (entity.Products.Any(x => x.Status != (int)BuyItemStatusEnum.ItemCancelado))
                 {
                     entity.Status = (int)BuyStatusEnum.CompraAlterada;
-                    await SaveHistory(entity);
+                    await SaveHistory(entity, $"Produtos cancelados");
                 }
                 else
                 {
                     //Cancelando a compra caso todos os itens estejam cancelados
                     entity.Status = (int)BuyStatusEnum.CompraCancelada;
-                    await SaveHistory(entity);
+                    await SaveHistory(entity, "Todos os produtos foram cancelados");
                 }
             }
-            else
-            {
-                if (statusModified)
-                    await SaveHistory(entity);
-            }
+
+            await _repository.ReplaceOneAsync(entity);
+
+            //Independente dos produtos se houver alteração do status tb, na entidade principal será lançado como histórico
+            if (statusModified)
+                await SaveHistory(entity);
 
             Log.Information($"Compra Alterada - {this.GetType().Name}");
 
@@ -116,9 +120,11 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
             throw new ApiException(e.Message, true);
         }
     }
-    private async Task SaveHistory(BuyEntity entity)
+    private async Task SaveHistory(BuyEntity entity, string msgStatus = "")
     {
         string msg = "Status da compra alterado";
+
+        if (!string.IsNullOrWhiteSpace(msgStatus)) msg = string.Concat(msg, " - ", msgStatus);
 
         await _histRepository.InsertOneAsync(new BuyHistoryEntity
         {

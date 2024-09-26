@@ -13,8 +13,6 @@ public class ProductContract
 
 public class ProductUpdateContract : ProductContract
 {
-    public string Name { get; set; }
-
     public BuyItemStatusEnum Status { get; set; }
 }
 
