@@ -2,6 +2,6 @@
 
 public class CustomerContract
 {
-    public Int64? CustomerId { get; set; }
+    public Int64 CustomerId { get; set; }
     public string Name { get; set; }
 }

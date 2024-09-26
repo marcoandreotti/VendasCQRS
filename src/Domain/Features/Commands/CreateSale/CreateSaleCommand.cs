@@ -1,75 +1,52 @@
-﻿using Domain.Contracts;
-using FluentValidation;
+﻿using AutoMapper;
+using Domain.Contracts;
+using Domain.Entities;
+using Domain.Exceptions;
+using Domain.Extensions.Filters;
+using Domain.Intefaces;
+using Domain.Wrappers;
 using MediatR;
+using Serilog;
 
 namespace Domain.Features.Commands.CreateSale;
 
-public class CreateSaleCommand : SaleContract, IRequest<Unit> { }
+public class CreateSaleCommand : SaleContract, IRequest<Response<Unit>> { }
 
-public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
+public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Response<Unit>>
 {
-    public CreateSaleCommandValidator()
+    private readonly IMapper _mapper;
+    private readonly IMongoRepository<SaleEntity> _repository;
+
+    public CreateSaleCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository)
     {
-        RuleFor(r => r.SaleId)
-            .NotNull()
-            .WithMessage("{PropertyName} is required.")
-            .GreaterThan(0)
-            .WithMessage("{PropertyName} - Number of trainings must be greater than 0.");
-
-        RuleFor(r => r.Customer)
-            .NotNull()
-            .WithMessage("{PropertyName} is required.");
-
-        RuleFor(x => x.Customer.CustomerId)
-            .NotNull().NotEmpty()
-            .WithMessage("Customer {PropertyName} is required.")
-            .Must(x => x <= 0)
-            .WithMessage("Customer {PropertyName} is required.");
-
-        RuleFor(x => x.Customer.Name)
-            .NotNull().NotEmpty()
-            .WithMessage("Customer {PropertyName} is required.");
-
-        RuleFor(r => r.Products)
-            .NotNull()
-            .WithMessage("{PropertyName} is required.")
-            .Must(x => x.Any())
-            .WithMessage("{PropertyName} is required.");
-
-        RuleFor(x => x.Products.Select(p => p.ProductId))
-            .Must(x => !x.Any(s => s <= 0))
-            .WithMessage("Product {PropertyName} is required.");
-
-        RuleFor(x => x.Products.Select(p => p.Name))
-            .Must(x => !x.Any(s => string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s)))
-            .WithMessage("Product {PropertyName} is required.");
-
-        RuleFor(x => x.Products.Select(p => p.Quantity))
-            .Must(x => !x.Any(s => s <= 0))
-            .WithMessage("Product {PropertyName} is required.");
-
-        RuleFor(x => x.Products.Select(p => p.UnitPrice))
-            .Must(x => !x.Any(s => s <= 0))
-            .WithMessage("Product {PropertyName} is required.");
-
-
-        RuleFor(r => r.SaleDate)
-            .NotEmpty()
-            .WithMessage("{PropertyName} is required.")
-            .NotNull()
-            .WithMessage("{PropertyName} is required.");
+        _mapper = mapper;
+        _repository = repository;
     }
 
-    public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Unit>
+    public async Task<Response<Unit>> Handle(CreateSaleCommand request, CancellationToken cancellationToken)
     {
-        public CreateSaleCommandHandler()
-        {
-        }
+        Log.Information($"Iniciando {this.GetType().Name}");
 
-        public async Task<Unit> Handle(CreateSaleCommand request, CancellationToken cancellationToken)
+        try
         {
-            return new Unit();
+            await ExistsEntity(request.SaleId);
+
+            var entity = _mapper.Map<SaleEntity>(request);
+            await _repository.InsertOneAsync(entity);
         }
+        catch (Exception e)
+        {
+            throw new ApiException(e.Message, true);
+        }
+        return new Response<Unit>(new Unit());
+    }
+
+    private async Task ExistsEntity(Int64 saleId)
+    {
+        var entity = await _repository.FindOneAsync(saleId.FindBySaleId());
+
+        if (entity != null)
+            throw new ApiException("Venda já existe na base de dados", true);
     }
 }
 

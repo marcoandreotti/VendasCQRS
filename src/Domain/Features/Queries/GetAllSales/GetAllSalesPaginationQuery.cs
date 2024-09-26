@@ -6,11 +6,11 @@ namespace Domain.Features.Queries;
 
 public class GetAllSalesPaginationQuery : IPagination, IRequest<PaginationResult<SaleContract>>
 {
+    public Int64? SaleId { get; set; }
     public string? CustomerName { get; set; }
     public string? ProductName { get; set; }
     public DateTime? SaleInititalDate { get; set; }
     public DateTime? SaleEndDate { get; set; }
-    public decimal? TotalSalePrice { get; set; }
     public int? Status { get; set; }
 
     public int? PageSize { get; set; }

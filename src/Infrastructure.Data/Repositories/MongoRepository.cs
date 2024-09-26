@@ -1,4 +1,5 @@
 ﻿using Domain.Attributes;
+using Domain.Exceptions;
 using Domain.Intefaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -13,16 +14,20 @@ public class MongoRepository<TDocument> : IMongoRepository<TDocument>
 
     public MongoRepository(IMongoDbSettings settings)
     {
-        var database = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
-        _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
+        try
+        {
+            var database = new MongoClient(settings.ConnectionString).GetDatabase(settings.DatabaseName);
+            _collection = database.GetCollection<TDocument>(GetCollectionName(typeof(TDocument)));
+        }
+        catch (Exception ex)
+        {
+            throw new ApiException(ex.Message, true);
+        }
     }
 
     private protected string GetCollectionName(Type documentType)
     {
-        return ((BsonCollectionAttribute)documentType.GetCustomAttributes(
-                typeof(BsonCollectionAttribute),
-                true)
-            .FirstOrDefault())?.CollectionName;
+        return ((BsonCollectionAttribute)documentType.GetCustomAttributes(typeof(BsonCollectionAttribute),true).FirstOrDefault())?.CollectionName;
     }
 
     public virtual IQueryable<TDocument> AsQueryable()
