@@ -4,11 +4,11 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-[BsonCollection("Sale")]
-public class SaleEntity : Document
+[BsonCollection("Buy")]
+public class BuyEntity : Document
 {
-    [BsonElement("sale-id")]
-    public Int64 SaleId { get; set; }
+    [BsonElement("buy-id")]
+    public Int64 BuyId { get; set; }
 
     [BsonElement("customer")]
     public CustomerEntity Customer { get; set; }
@@ -16,11 +16,11 @@ public class SaleEntity : Document
     [BsonElement("products")]
     public IEnumerable<ProductEntity> Products { get; set; }
 
-    [BsonElement("sale-date")]
-    public DateTime SaleDate { get; set; }
+    [BsonElement("buy-date")]
+    public DateTime BuyDate { get; set; }
 
-    [BsonElement("total-sale-price")]
-    public decimal TotalSalePrice { get; set; }
+    [BsonElement("total-buy-price")]
+    public decimal TotalBuyPrice { get; set; }
 
     [BsonElement("status")]
     public int Status { get; set; }

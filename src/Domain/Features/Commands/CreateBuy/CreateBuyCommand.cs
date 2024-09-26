@@ -10,32 +10,32 @@ using Domain.Wrappers;
 using MediatR;
 using Serilog;
 
-namespace Domain.Features.Commands.CreateSale;
+namespace Domain.Features.Commands.CreateBuy;
 
-public class CreateSaleCommand : SaleContract, IRequest<Response<Unit>> { }
+public class CreateBuyCommand : BuyContract, IRequest<Response<Unit>> { }
 
-public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Response<Unit>>
+public class CreateBuyCommandHandler : IRequestHandler<CreateBuyCommand, Response<Unit>>
 {
     private readonly IMapper _mapper;
-    private readonly IMongoRepository<SaleEntity> _repository;
-    private readonly IMongoRepository<SalesHistoryEntity> _histRepository;
+    private readonly IMongoRepository<BuyEntity> _repository;
+    private readonly IMongoRepository<BuyHistoryEntity> _histRepository;
 
-    public CreateSaleCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository, IMongoRepository<SalesHistoryEntity> histRepository)
+    public CreateBuyCommandHandler(IMapper mapper, IMongoRepository<BuyEntity> repository, IMongoRepository<BuyHistoryEntity> histRepository)
     {
         _mapper = mapper;
         _repository = repository;
         _histRepository = histRepository;
     }
 
-    public async Task<Response<Unit>> Handle(CreateSaleCommand request, CancellationToken cancellationToken)
+    public async Task<Response<Unit>> Handle(CreateBuyCommand request, CancellationToken cancellationToken)
     {
         Log.Information($"Iniciando - {this.GetType().Name}");
 
         try
         {
-            await ExistsEntity(request.SaleId);
+            await ExistsEntity(request.BuyId);
 
-            var entity = _mapper.Map<SaleEntity>(request);
+            var entity = _mapper.Map<BuyEntity>(request);
 
             //Aqui validaremos e carregaremos o nome do Cliente caso exita
             entity.Customer.Name = await GetCostumerNameOnCRM(request.CustomerId);
@@ -45,7 +45,7 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
 
             await _repository.InsertOneAsync(entity);
 
-            await SaveSalesHistory(entity);
+            await SaveHistory(entity);
 
             Log.Information($"Compra Criada - {this.GetType().Name}");
 
@@ -57,16 +57,16 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
         return new Response<Unit>(new Unit());
     }
 
-    private async Task SaveSalesHistory(SaleEntity entity)
+    private async Task SaveHistory(BuyEntity entity)
     {
         string msg = "...";
 
-        await _histRepository.InsertOneAsync(new SalesHistoryEntity
+        await _histRepository.InsertOneAsync(new BuyHistoryEntity
         {
-            SaleId = entity.SaleId,
+            BuyId = entity.BuyId,
             Message = msg,
             UserName = "Usuário logado",
-            Status = ((SaleStatusEnum)entity.Status).GetDisplayName()
+            Status = ((BuyStatusEnum)entity.Status).GetDisplayName()
         });
     }
 
@@ -94,9 +94,9 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
         return products;
     }
 
-    private async Task ExistsEntity(Int64 saleId)
+    private async Task ExistsEntity(Int64 buyId)
     {
-        var entity = await _repository.FindOneAsync(saleId.FindBySaleId());
+        var entity = await _repository.FindOneAsync(buyId.FindByBuyId());
 
         if (entity != null)
             throw new ApiException("Venda já existe na base de dados", true);

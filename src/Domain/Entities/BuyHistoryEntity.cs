@@ -4,14 +4,14 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Domain.Entities;
 
 
-[BsonCollection("SalesHistory")]
-public class SalesHistoryEntity : Document
+[BsonCollection("BuyHistory")]
+public class BuyHistoryEntity : Document
 {
-    [BsonElement("sale-id")]
-    public Int64 SaleId { get; set; }
+    [BsonElement("buy-id")]
+    public Int64 BuyId { get; set; }
 
-    [BsonElement("sale-date")]
-    public DateTime? SaleDate { get; set; }
+    [BsonElement("buy-date")]
+    public DateTime? BuyDate { get; set; }
 
     [BsonElement("user-name")]
     public string UserName { get; set; }

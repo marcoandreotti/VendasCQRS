@@ -10,13 +10,13 @@ using Serilog;
 
 namespace Domain.Features.Queries;
 
-public class GetAllSalesPaginationQuery : IPagination, IRequest<PaginationResult<SaleQueryContract>>
+public class GetAllBuyPaginationQuery : IPagination, IRequest<PaginationResult<BuyQueryContract>>
 {
-    public Int64? SaleId { get; set; }
+    public Int64? BuyId { get; set; }
     public string? CustomerName { get; set; }
     public string? ProductName { get; set; }
-    public DateTime? SaleInititalDate { get; set; }
-    public DateTime? SaleEndDate { get; set; }
+    public DateTime? BuyInititalDate { get; set; }
+    public DateTime? BuyEndDate { get; set; }
     public int? Status { get; set; }
 
     public int? PageSize { get; set; }
@@ -25,16 +25,16 @@ public class GetAllSalesPaginationQuery : IPagination, IRequest<PaginationResult
     public string? OrderBy { get; set; }
 }
 
-public class GetAllSalesPaginationQueryHandler : IRequestHandler<GetAllSalesPaginationQuery, PaginationResult<SaleQueryContract>>
+public class GetAllBuyPaginationQueryHandler : IRequestHandler<GetAllBuyPaginationQuery, PaginationResult<BuyQueryContract>>
 {
-    private readonly IMongoRepository<SaleEntity> _repository;
+    private readonly IMongoRepository<BuyEntity> _repository;
 
-    public GetAllSalesPaginationQueryHandler(IMongoRepository<SaleEntity> repository)
+    public GetAllBuyPaginationQueryHandler(IMongoRepository<BuyEntity> repository)
     {
         _repository = repository;
     }
 
-    public async Task<PaginationResult<SaleQueryContract>> Handle(GetAllSalesPaginationQuery query, CancellationToken cancellationToken)
+    public async Task<PaginationResult<BuyQueryContract>> Handle(GetAllBuyPaginationQuery query, CancellationToken cancellationToken)
     {
         Log.Information($"Iniciando {this.GetType().Name}");
 
@@ -51,11 +51,11 @@ public class GetAllSalesPaginationQueryHandler : IRequestHandler<GetAllSalesPagi
             var page = query.Page ?? 1;
             var pageSize = query.PageSize ?? 10;
 
-            var result = entities.Select(x => new SaleQueryContract
+            var result = entities.Select(x => new BuyQueryContract
             {
-                SaleId = x.SaleId,
-                Status = x.Status.ToEnum<SaleStatusEnum>(),
-                TotalSalePrice = x.TotalSalePrice,
+                BuyId = x.BuyId,
+                Status = x.Status.ToEnum<BuyStatusEnum>(),
+                TotalBuyPrice = x.TotalBuyPrice,
                 Customer = new CustomerContract
                 {
                     CustomerId = x.Customer.CustomerId,
@@ -68,11 +68,11 @@ public class GetAllSalesPaginationQueryHandler : IRequestHandler<GetAllSalesPagi
                     Quantity = p.Quantity,
                     Discount = p.Discount,
                     UnitPrice = p.UnitPrice,
-                    Status = p.Status.ToEnum<SaleItemStatusEnum>()
+                    Status = p.Status.ToEnum<BuyItemStatusEnum>()
                 }).ToList()
             }).ToList();
 
-            return new PaginationResult<SaleQueryContract>(page, pageSize, countDB, result);
+            return new PaginationResult<BuyQueryContract>(page, pageSize, countDB, result);
 
         }
         catch (Exception e)
