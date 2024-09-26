@@ -26,6 +26,6 @@ namespace Domain.Entities
         public decimal? TotalPrice { get; set; }
 
         [BsonElement("status")]
-        public string? Status { get; set; }
+        public int? Status { get; set; }
     }
 }

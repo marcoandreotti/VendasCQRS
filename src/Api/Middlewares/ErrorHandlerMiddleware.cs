@@ -35,7 +35,7 @@ public class ErrorHandlerMiddleware
                 case ApiException e:
                     if (e.SendLogger)
                     {
-                        Log.Warning(e, "Error");
+                        Log.Warning(e, "Warning");
                     }
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     if (e.Errors != null && e.Errors.Count > 0)

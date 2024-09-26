@@ -6,12 +6,15 @@ public interface IMongoRepository<TDocument> where TDocument : IDocument
 {
     IQueryable<TDocument> AsQueryable();
 
-    IEnumerable<TDocument> FilterBy(
-        Expression<Func<TDocument, bool>> filterExpression);
+    IEnumerable<TDocument> FilterBy(Expression<Func<TDocument, bool>> filterExpression);
 
     IEnumerable<TProjected> FilterBy<TProjected>(
         Expression<Func<TDocument, bool>> filterExpression,
         Expression<Func<TDocument, TProjected>> projectionExpression);
+    Task<IEnumerable<TDocument>> FilterPaginationBy(int? page, int? itemsPerPage, Expression<Func<TDocument, bool>> filterExpression,
+        string? sortBy = null, string? orderBy = null);
+
+    Task<long> CountDocuments(Expression<Func<TDocument, bool>> filter);
 
     TDocument FindOne(Expression<Func<TDocument, bool>> filterExpression);
 

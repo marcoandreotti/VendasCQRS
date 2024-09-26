@@ -13,20 +13,16 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
             .GreaterThan(0)
             .WithMessage("{PropertyName} - Number of trainings must be greater than 0.");
 
-        RuleFor(r => r.Customer)
+        RuleFor(r => r.CustomerId)
             .NotNull()
             .WithMessage("{PropertyName} is required.");
 
-        RuleFor(x => x.Customer.CustomerId)
+        RuleFor(x => x.CustomerId)
             .NotNull()
             .NotEqual(0)
-            .WithMessage("Customer {PropertyName} is required.")
-            .Must(x => x <= 0)
-            .WithMessage("Customer {PropertyName} is required.");
-
-        RuleFor(x => x.Customer.Name)
-            .NotNull().NotEmpty()
-            .WithMessage("Customer {PropertyName} is required.");
+            .WithMessage("{PropertyName} is required.")
+            .GreaterThan(0)
+            .WithMessage("{PropertyName} - Number of trainings must be greater than 0.");
 
         RuleFor(r => r.Products)
             .NotNull()
@@ -36,10 +32,6 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 
         RuleFor(x => x.Products.Select(p => p.ProductId))
             .Must(x => x.Any(s => s <= 0))
-            .WithMessage("Product {PropertyName} is required.");
-
-        RuleFor(x => x.Products.Select(p => p.Name))
-            .Must(x => !x.Any(s => string.IsNullOrEmpty(s) || string.IsNullOrWhiteSpace(s)))
             .WithMessage("Product {PropertyName} is required.");
 
         RuleFor(x => x.Products.Select(p => p.Quantity))

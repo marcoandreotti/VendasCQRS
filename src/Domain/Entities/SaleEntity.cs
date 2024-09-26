@@ -20,7 +20,7 @@ public class SaleEntity : Document
     public DateTime SaleDate { get; set; }
 
     [BsonElement("total-sale-price")] 
-    public string? TotalSalePrice { get; set; }
+    public decimal TotalSalePrice { get; set; }
 
     [BsonElement("status")] 
     public int? Status { get; set; }

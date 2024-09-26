@@ -8,7 +8,7 @@ public class Response<T>
     {
         Succeeded = true;
         Message = message;
-        Data = data;
+        Results = data;
     }
 
     public Response(string message)
@@ -23,5 +23,5 @@ public class Response<T>
 
     public List<string> Errors { get; set; }
 
-    public T Data { get; set; }
+    public T Results { get; set; }
 }

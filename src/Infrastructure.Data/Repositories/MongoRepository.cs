@@ -7,8 +7,7 @@ using System.Linq.Expressions;
 
 namespace Infrastructure.Data.Repositories;
 
-public class MongoRepository<TDocument> : IMongoRepository<TDocument>
-    where TDocument : IDocument
+public class MongoRepository<TDocument> : IMongoRepository<TDocument> where TDocument : IDocument
 {
     private readonly IMongoCollection<TDocument> _collection;
 
@@ -48,6 +47,29 @@ public class MongoRepository<TDocument> : IMongoRepository<TDocument>
         return _collection.Find(filterExpression).Project(projectionExpression).ToEnumerable();
     }
 
+    public virtual async Task<IEnumerable<TDocument>> FilterPaginationBy(int? page, int? itemsPerPage, Expression<Func<TDocument, bool>> filterExpression,
+        string? sortBy = null, string? orderBy = null)
+    {
+        var filter = Builders<TDocument>.Filter.And(Builders<TDocument>.Filter.Where(filterExpression));
+        var findOptions = new FindOptions<TDocument>();
+
+        if ((page ?? 0) > 0 && (itemsPerPage ?? 0) > 0)
+        {
+            findOptions.Skip = page - 1;
+            findOptions.Limit = itemsPerPage ?? 10;
+        }
+
+        if (!string.IsNullOrEmpty(orderBy))
+            findOptions.Sort = orderBy.ToLowerInvariant().Contains("desc") ? Builders<TDocument>.Sort.Descending(orderBy) : Builders<TDocument>.Sort.Ascending(orderBy);
+
+#if DEBUG
+        var query = _collection.FindAsync(filter, findOptions).ToString();
+#endif
+        return (await _collection.FindAsync(filter, findOptions).Result.ToListAsync());
+    }
+
+    public async Task<long> CountDocuments(Expression<Func<TDocument, bool>> filter) => await _collection.CountDocumentsAsync(filter).ConfigureAwait(false);
+
     public virtual TDocument FindOne(Expression<Func<TDocument, bool>> filterExpression)
     {
         return _collection.Find(filterExpression).FirstOrDefault();
@@ -75,7 +97,6 @@ public class MongoRepository<TDocument> : IMongoRepository<TDocument>
         });
     }
 
-
     public virtual void InsertOne(TDocument document)
     {
         _collection.InsertOne(document);
@@ -90,7 +111,6 @@ public class MongoRepository<TDocument> : IMongoRepository<TDocument>
     {
         _collection.InsertMany(documents);
     }
-
 
     public virtual async Task InsertManyAsync(ICollection<TDocument> documents)
     {

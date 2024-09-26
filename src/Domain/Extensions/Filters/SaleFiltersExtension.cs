@@ -42,7 +42,6 @@ public static class SaleFiltersExtension
             filter = filter.And(item => item.SaleDate == date);
         }
 
-
         if (query.Status.HasValue)
         {
             filter = filter.And(item => item.Status == query.Status);
