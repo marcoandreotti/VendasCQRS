@@ -1,17 +1,17 @@
 ﻿using FluentValidation;
 
-namespace Domain.Features.Commands.CreateBuy;
+namespace Domain.Features.Commands.UpdateBuy;
 
-public class CreateBuyCommandValidator : AbstractValidator<CreateBuyCommand>
+public class UpdateBuyCommandValidator : AbstractValidator<UpdateBuyCommand>
 {
-    public CreateBuyCommandValidator()
+    public UpdateBuyCommandValidator()
     {
         RuleFor(r => r.BuyId)
-            .NotNull()
-            .NotEqual(0)
-            .WithMessage("Id da Compra é requerido.")
-            .GreaterThan(0)
-            .WithMessage("Id da Compra - não deve ser menor que 0");
+             .NotNull()
+             .NotEqual(0)
+             .WithMessage("Id da Compra é requerido.")
+             .GreaterThan(0)
+             .WithMessage("Id da Compra - não deve ser menor que 0");
 
         RuleFor(x => x.CustomerId)
             .NotNull()
@@ -35,11 +35,20 @@ public class CreateBuyCommandValidator : AbstractValidator<CreateBuyCommand>
             .Must(x => !x.Any(s => s <= 0))
             .WithMessage("Preço unitário do Product é requerido.");
 
+        RuleFor(x => x.Products.Select(p => (int)p.Status))
+            .Must(x => !x.Any(s => s <= 0 && s >= 3))
+            .WithMessage("Status do Product só pode ser 1 ou 2.");
+
 
         RuleFor(r => r.BuyDate)
             .NotEmpty()
             .NotNull()
             .WithMessage("Data da Compra é requerido.");
+
+        RuleFor(r => (int)r.Status)
+            .NotNull()
+            .ExclusiveBetween(1,3)
+            .WithMessage("Status da Compra é requerido.");
     }
 
 }
