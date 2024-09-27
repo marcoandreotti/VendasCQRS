@@ -43,9 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Commands\DeleteBuyById\" />
-    <Folder Include="Features\Queries\GetAllBuy\" />
-    <Folder Include="Features\Queries\GetBuyById\" />
+    <Folder Include="Features\Commands\DeleteSaleById\" />
+    <Folder Include="Features\Queries\GetAllSale\" />
+    <Folder Include="Features\Queries\GetSaleById\" />
   </ItemGroup>
 
 </Project>

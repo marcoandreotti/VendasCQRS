@@ -1,14 +1,14 @@
 ﻿using Domain.Contracts;
-using Domain.Features.Commands.CreateBuy;
+using Domain.Features.Commands.CreateSale;
 
 namespace Tests.Shared.Commands;
 
-public class CreateBuyCommandMoq
+public class CreateSaleCommandMoq
 {
-    public static CreateBuyCommand createBuySuccessRequest => new CreateBuyCommand
+    public static CreateSaleCommand createSaleSuccessRequest => new CreateSaleCommand
     {
-        BuyId = 1,
-        BuyDate = DateTime.Now,
+        SaleId = 1,
+        SaleDate = DateTime.Now,
         CustomerId = 1,
         Products = new List<ProductContract> {
                 new ProductContract {
@@ -20,10 +20,10 @@ public class CreateBuyCommandMoq
             }
     };
 
-    public static CreateBuyCommand createBuyValidationNotProductRequest => new CreateBuyCommand
+    public static CreateSaleCommand createSaleValidationNotProductRequest => new CreateSaleCommand
     {
-        BuyId = 1,
-        BuyDate = DateTime.Now,
+        SaleId = 1,
+        SaleDate = DateTime.Now,
         CustomerId = 1,
         Products = new List<ProductContract> {
                 new ProductContract {

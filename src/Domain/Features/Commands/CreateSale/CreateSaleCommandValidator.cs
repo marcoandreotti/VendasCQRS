@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 
-namespace Domain.Features.Commands.CreateBuy;
+namespace Domain.Features.Commands.CreateSale;
 
-public class CreateBuyCommandValidator : AbstractValidator<CreateBuyCommand>
+public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 {
-    public CreateBuyCommandValidator()
+    public CreateSaleCommandValidator()
     {
-        RuleFor(r => r.BuyId)
+        RuleFor(r => r.SaleId)
             .NotNull()
             .NotEqual(0)
             .WithMessage("Id da Compra é requerido.")
@@ -36,7 +36,7 @@ public class CreateBuyCommandValidator : AbstractValidator<CreateBuyCommand>
             .WithMessage("Preço unitário do Product é requerido.");
 
 
-        RuleFor(r => r.BuyDate)
+        RuleFor(r => r.SaleDate)
             .NotEmpty()
             .NotNull()
             .WithMessage("Data da Compra é requerido.");

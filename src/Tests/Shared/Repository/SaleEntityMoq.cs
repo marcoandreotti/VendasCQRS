@@ -3,16 +3,16 @@ using MongoDB.Bson;
 
 namespace Tests.Shared.Repository;
 
-public class BuyEntityMoq
+public class SaleEntityMoq
 {
-    public static BuyEntity BuyEntityResponse => new BuyEntity
+    public static SaleEntity SaleEntityResponse => new SaleEntity
     {
         Id = ObjectId.GenerateNewId(),
-        BuyDate = DateTime.Now,
-        BuyId = 1,
+        SaleDate = DateTime.Now,
+        SaleId = 1,
         Customer = new CustomerEntity { CustomerId = 1, Name = "Teste 1" },
         Status = 1,
-        TotalBuyPrice = 1,
+        TotalSalePrice = 1,
         Products = new List<ProductEntity> {
             new ProductEntity {
                 ProductId = 1,

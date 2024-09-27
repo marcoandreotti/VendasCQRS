@@ -1,39 +1,39 @@
 ﻿using Domain.Contracts;
 using Domain.Enums;
-using Domain.Features.Commands.UpdateBuy;
+using Domain.Features.Commands.UpdateSale;
 
 namespace Tests.Shared.Commands;
 
-public class UpdateBuyCommandMoq
+public class UpdateSaleCommandMoq
 {
-    public static UpdateBuyCommand updateBuySuccessRequest => new UpdateBuyCommand
+    public static UpdateSaleCommand updateSaleSuccessRequest => new UpdateSaleCommand
     {
-        BuyId = 1,
-        BuyDate = DateTime.Now,
+        SaleId = 1,
+        SaleDate = DateTime.Now,
         CustomerId = 1,
-        Status = BuyStatusEnum.CompraCriada,
+        Status = SaleStatusEnum.CompraCriada,
         Products = new List<ProductUpdateContract> {
                 new ProductUpdateContract {
                     ProductId =1,
                     Quantity = 1,
                     UnitPrice = 1,
                     Discount = 0,
-                    Status = BuyItemStatusEnum.ItemCriado,
+                    Status = SaleItemStatusEnum.ItemCriado,
                 }
             }
     };
 
-    public static UpdateBuyCommand updateBuyValidationNotProductRequest => new UpdateBuyCommand
+    public static UpdateSaleCommand updateSaleValidationNotProductRequest => new UpdateSaleCommand
     {
-        BuyId = 1,
-        BuyDate = DateTime.Now,
+        SaleId = 1,
+        SaleDate = DateTime.Now,
         CustomerId = 1,
-        Status = BuyStatusEnum.CompraCriada,
+        Status = SaleStatusEnum.CompraCriada,
         Products = new List<ProductUpdateContract> {
                 new ProductUpdateContract {
                     UnitPrice = 1,
                     Discount = 0,
-                    Status = BuyItemStatusEnum.ItemCriado
+                    Status = SaleItemStatusEnum.ItemCriado
                 }
             }
     };

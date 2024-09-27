@@ -10,32 +10,32 @@ using Domain.Wrappers;
 using MediatR;
 using Serilog;
 
-namespace Domain.Features.Commands.UpdateBuy;
+namespace Domain.Features.Commands.UpdateSale;
 
-public class UpdateBuyCommand : BuyUpdateContract, IRequest<Response<Unit>> { }
+public class UpdateSaleCommand : SaleUpdateContract, IRequest<Response<Unit>> { }
 
-public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Response<Unit>>
+public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Response<Unit>>
 {
     private readonly IMapper _mapper;
-    private readonly IMongoRepository<BuyEntity> _repository;
-    private readonly IMongoRepository<BuyHistoryEntity> _histRepository;
+    private readonly IMongoRepository<SaleEntity> _repository;
+    private readonly IMongoRepository<SaleHistoryEntity> _histRepository;
 
-    public UpdateBuyCommandHandler(IMapper mapper, IMongoRepository<BuyEntity> repository, IMongoRepository<BuyHistoryEntity> histRepository)
+    public UpdateSaleCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository, IMongoRepository<SaleHistoryEntity> histRepository)
     {
         _mapper = mapper;
         _repository = repository;
         _histRepository = histRepository;
     }
 
-    public async Task<Response<Unit>> Handle(UpdateBuyCommand request, CancellationToken cancellationToken)
+    public async Task<Response<Unit>> Handle(UpdateSaleCommand request, CancellationToken cancellationToken)
     {
         Log.Information($"Iniciando - {this.GetType().Name}");
 
         try
         {
-            var entity = await ExistingEntity(request.BuyId);
+            var entity = await ExistingEntity(request.SaleId);
 
-            if (entity.Status == (int)BuyStatusEnum.CompraCancelada)
+            if (entity.Status == (int)SaleStatusEnum.CompraCancelada)
                 throw new ApiException("Compra cancelada, não é possível alterar");
 
             var id = entity.Id;
@@ -46,8 +46,8 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
             if (request.CustomerId != entity.Customer.CustomerId)
                 entity.Customer.CustomerId = request.CustomerId;
 
-            if (request.BuyDate != entity.BuyDate)
-                entity.BuyDate = request.BuyDate;
+            if (request.SaleDate != entity.SaleDate)
+                entity.SaleDate = request.SaleDate;
 
             foreach (var prod in request.Products)
             {
@@ -85,22 +85,22 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
 
             if (productModified)
             {
-                entity.Status = (int)BuyStatusEnum.CompraAlterada;
+                entity.Status = (int)SaleStatusEnum.CompraAlterada;
                 await SaveHistory(entity, $"Produtos alterados");
             }
 
             if (stautsProductModified)
             {
                 //Verificando se todos os itens foram cancelados
-                if (entity.Products.Any(x => x.Status != (int)BuyItemStatusEnum.ItemCancelado))
+                if (entity.Products.Any(x => x.Status != (int)SaleItemStatusEnum.ItemCancelado))
                 {
-                    entity.Status = (int)BuyStatusEnum.CompraAlterada;
+                    entity.Status = (int)SaleStatusEnum.CompraAlterada;
                     await SaveHistory(entity, $"Produtos cancelados");
                 }
                 else
                 {
                     //Cancelando a compra caso todos os itens estejam cancelados
-                    entity.Status = (int)BuyStatusEnum.CompraCancelada;
+                    entity.Status = (int)SaleStatusEnum.CompraCancelada;
                     await SaveHistory(entity, "Todos os produtos foram cancelados");
                 }
             }
@@ -120,19 +120,19 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
             throw new ApiException(e.Message, true);
         }
     }
-    private async Task SaveHistory(BuyEntity entity, string msgStatus = "")
+    private async Task SaveHistory(SaleEntity entity, string msgStatus = "")
     {
         string msg = "Status da compra alterado";
 
         if (!string.IsNullOrWhiteSpace(msgStatus)) msg = string.Concat(msg, " - ", msgStatus);
 
-        await _histRepository.InsertOneAsync(new BuyHistoryEntity
+        await _histRepository.InsertOneAsync(new SaleHistoryEntity
         {
-            BuyId = entity.BuyId,
+            SaleId = entity.SaleId,
             Message = msg,
             UserName = "Usuário logado",
-            BuyDate = entity.BuyDate,
-            Status = ((BuyStatusEnum)entity.Status).GetDisplayName()
+            SaleDate = entity.SaleDate,
+            Status = ((SaleStatusEnum)entity.Status).GetDisplayName()
         });
     }
 
@@ -160,12 +160,12 @@ public class UpdateBuyCommandHandler : IRequestHandler<UpdateBuyCommand, Respons
         return products;
     }
 
-    private async Task<BuyEntity> ExistingEntity(Int64 buyId)
+    private async Task<SaleEntity> ExistingEntity(Int64 saleId)
     {
-        var entity = await _repository.FindOneAsync(buyId.FindByBuyId());
+        var entity = await _repository.FindOneAsync(saleId.FindBySaleId());
 
         if (entity == null)
-            throw new ApiException($"Compra não encontrada - id {buyId}", true);
+            throw new ApiException($"Compra não encontrada - id {saleId}", true);
 
         return entity;
     }
