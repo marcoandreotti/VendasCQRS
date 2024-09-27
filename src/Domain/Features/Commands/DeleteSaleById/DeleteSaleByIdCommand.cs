@@ -7,36 +7,36 @@ using Domain.Wrappers;
 using MediatR;
 using Serilog;
 
-namespace Domain.Features.Commands.DeleteBuyById;
+namespace Domain.Features.Commands.DeleteSaleById;
 
-public class DeleteBuyByIdCommand : IRequest<Response<Unit>>
+public class DeleteSaleByIdCommand : IRequest<Response<Unit>>
 {
-    public Int64 BuyId { get; set; }
+    public Int64 SaleId { get; set; }
 }
 
-public class DeleteBuyByIdCommandHandler : IRequestHandler<DeleteBuyByIdCommand, Response<Unit>>
+public class DeleteSaleByIdCommandHandler : IRequestHandler<DeleteSaleByIdCommand, Response<Unit>>
 {
     private readonly IMapper _mapper;
-    private readonly IMongoRepository<BuyEntity> _repository;
-    private readonly IMongoRepository<BuyHistoryEntity> _histRepository;
+    private readonly IMongoRepository<SaleEntity> _repository;
+    private readonly IMongoRepository<SaleHistoryEntity> _histRepository;
 
-    public DeleteBuyByIdCommandHandler(IMapper mapper, IMongoRepository<BuyEntity> repository, IMongoRepository<BuyHistoryEntity> histRepository)
+    public DeleteSaleByIdCommandHandler(IMapper mapper, IMongoRepository<SaleEntity> repository, IMongoRepository<SaleHistoryEntity> histRepository)
     {
         _mapper = mapper;
         _repository = repository;
         _histRepository = histRepository;
     }
 
-    public async Task<Response<Unit>> Handle(DeleteBuyByIdCommand request, CancellationToken cancellationToken)
+    public async Task<Response<Unit>> Handle(DeleteSaleByIdCommand request, CancellationToken cancellationToken)
     {
         Log.Information($"Iniciando - {this.GetType().Name}");
 
         try
         {
-            var filter = request.BuyId.FindQueryByBuyId();
+            var filter = request.SaleId.FindQueryBySaleId();
             await _repository.DeleteOneAsync(filter);
 
-            await SaveHistory(request.BuyId);
+            await SaveHistory(request.SaleId);
 
             Log.Information($"Compra Excluida - {this.GetType().Name}");
 
@@ -48,13 +48,13 @@ public class DeleteBuyByIdCommandHandler : IRequestHandler<DeleteBuyByIdCommand,
         }
     }
 
-    private async Task SaveHistory(Int64 buyId)
+    private async Task SaveHistory(Int64 saleId)
     {
         string msg = "Compra excluida";
 
-        await _histRepository.InsertOneAsync(new BuyHistoryEntity
+        await _histRepository.InsertOneAsync(new SaleHistoryEntity
         {
-            BuyId = buyId,
+            SaleId = saleId,
             Message = msg,
             UserName = "Usuário logado",
             Status = "Excluido"

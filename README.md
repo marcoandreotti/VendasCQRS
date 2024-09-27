@@ -62,7 +62,7 @@ docker exec -it meu-mongo mongosh -u adm -p 123
 Esse comando executa o shell do MongoDB. Não é necessário realizar nenhuma ação adicional, basta copiar a ConnectionString gerada.
 
  - <em>É semelhante ao texto abaixo:</em>
- **<h6>mongodb://<credentials>@127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.1</h6>**
+ **<h6>mongodb://adm:123@127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.3.1</h6>**
 
 
 ## ⚙️ Executando os testes

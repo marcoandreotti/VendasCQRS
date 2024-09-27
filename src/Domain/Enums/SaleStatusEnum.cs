@@ -2,7 +2,7 @@
 
 namespace Domain.Enums;
 
-public enum BuyStatusEnum
+public enum SaleStatusEnum
 {
     [Display(Name = "Compra criada")]
     CompraCriada = 1,
@@ -14,7 +14,7 @@ public enum BuyStatusEnum
     CompraCancelada = 3
 }
 
-public enum BuyItemStatusEnum
+public enum SaleItemStatusEnum
 {
     [Display(Name = "Item criado")]
     ItemCriado = 1,

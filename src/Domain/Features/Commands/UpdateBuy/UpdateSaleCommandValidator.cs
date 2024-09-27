@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 
-namespace Domain.Features.Commands.UpdateBuy;
+namespace Domain.Features.Commands.UpdateSale;
 
-public class UpdateBuyCommandValidator : AbstractValidator<UpdateBuyCommand>
+public class UpdateSaleCommandValidator : AbstractValidator<UpdateSaleCommand>
 {
-    public UpdateBuyCommandValidator()
+    public UpdateSaleCommandValidator()
     {
-        RuleFor(r => r.BuyId)
+        RuleFor(r => r.SaleId)
              .NotNull()
              .NotEqual(0)
              .WithMessage("Id da Compra é requerido.")
@@ -40,7 +40,7 @@ public class UpdateBuyCommandValidator : AbstractValidator<UpdateBuyCommand>
             .WithMessage("Status do Product só pode ser 1 ou 2.");
 
 
-        RuleFor(r => r.BuyDate)
+        RuleFor(r => r.SaleDate)
             .NotEmpty()
             .NotNull()
             .WithMessage("Data da Compra é requerido.");
