@@ -8,10 +8,11 @@ namespace Domain.Extensions.Filters;
 public static class SaleFiltersExtension
 {
 
-    public static Expression<Func<SaleEntity, bool>> FindQueryBySaleId(this long saleId)
+    public static Expression<Func<SaleEntity, bool>> FindQueryBySaleId(this long saleId, long companyId)
     {
         var filter = PredicateBuilder.New<SaleEntity>(true);
         filter = filter.And(item => item.SaleId == saleId);
+        filter = filter.And(item => item.CompanyId == companyId);
 
         return filter;
     }
@@ -19,6 +20,11 @@ public static class SaleFiltersExtension
     public static Expression<Func<SaleEntity, bool>> Filter(this GetAllSalePaginationQuery query)
     {
         var filter = PredicateBuilder.New<SaleEntity>(true);
+
+        if (query.CompanyId.HasValue)
+        {
+            filter = filter.And(item => item.CompanyId == query.CompanyId);
+        }
 
         if (query.SaleId.HasValue)
         {

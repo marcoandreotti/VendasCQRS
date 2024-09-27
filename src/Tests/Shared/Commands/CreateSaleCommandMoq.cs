@@ -7,6 +7,7 @@ public class CreateSaleCommandMoq
 {
     public static CreateSaleCommand createSaleSuccessRequest => new CreateSaleCommand
     {
+        CompanyId = 1,
         SaleId = 1,
         SaleDate = DateTime.Now,
         CustomerId = 1,
@@ -22,6 +23,7 @@ public class CreateSaleCommandMoq
 
     public static CreateSaleCommand createSaleValidationNotProductRequest => new CreateSaleCommand
     {
+        CompanyId = 1,
         SaleId = 1,
         SaleDate = DateTime.Now,
         CustomerId = 1,

@@ -8,6 +8,7 @@ public class UpdateSaleCommandMoq
 {
     public static UpdateSaleCommand updateSaleSuccessRequest => new UpdateSaleCommand
     {
+        CompanyId = 1,
         SaleId = 1,
         SaleDate = DateTime.Now,
         CustomerId = 1,
@@ -25,6 +26,7 @@ public class UpdateSaleCommandMoq
 
     public static UpdateSaleCommand updateSaleValidationNotProductRequest => new UpdateSaleCommand
     {
+        CompanyId = 1,
         SaleId = 1,
         SaleDate = DateTime.Now,
         CustomerId = 1,

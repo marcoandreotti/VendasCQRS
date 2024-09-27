@@ -5,6 +5,8 @@ namespace Domain.Contracts;
 
 public class SaleContractBase
 {
+    public Int64 CompanyId { get; set; }
+
     public Int64 SaleId { get; set; }
 
     public DateTime SaleDate { get; set; }

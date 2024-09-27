@@ -33,7 +33,7 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
 
         try
         {
-            var entity = await ExistingEntity(request.SaleId);
+            var entity = await ExistingEntity(request.SaleId, request.CompanyId);
 
             if (entity.Status == (int)SaleStatusEnum.CompraCancelada)
                 throw new ApiException("Compra cancelada, não é possível alterar");
@@ -42,6 +42,8 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
             bool statusModified = (int)request.Status != entity.Status;
             bool stautsProductModified = false;
             bool productModified = false;
+
+            entity.Status = (int)request.Status;
 
             if (request.CustomerId != entity.Customer.CustomerId)
                 entity.Customer.CustomerId = request.CustomerId;
@@ -109,7 +111,7 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
 
             //Independente dos produtos se houver alteração do status tb, na entidade principal será lançado como histórico
             if (statusModified)
-                await SaveHistory(entity);
+                await SaveHistory(entity, entity.Status.ToEnum<SaleStatusEnum>().GetDisplayName());
 
             Log.Information($"Compra Alterada - {this.GetType().Name}");
 
@@ -128,6 +130,7 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
 
         await _histRepository.InsertOneAsync(new SaleHistoryEntity
         {
+            CompanyId = entity.CompanyId,
             SaleId = entity.SaleId,
             Message = msg,
             UserName = "Usuário logado",
@@ -160,9 +163,9 @@ public class UpdateSaleCommandHandler : IRequestHandler<UpdateSaleCommand, Respo
         return products;
     }
 
-    private async Task<SaleEntity> ExistingEntity(Int64 saleId)
+    private async Task<SaleEntity> ExistingEntity(Int64 saleId, Int64 companyId)
     {
-        var entity = await _repository.FindOneAsync(saleId.FindBySaleId());
+        var entity = await _repository.FindOneAsync(saleId.FindBySaleIds(companyId));
 
         if (entity == null)
             throw new ApiException($"Compra não encontrada - id {saleId}", true);

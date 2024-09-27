@@ -12,6 +12,7 @@ namespace Domain.Features.Queries.GetSaleById;
 
 public class GetSaleByIdQuery : IRequest<Response<SaleQueryContract>>
 {
+    public Int64 CompanyId { get; set; }
     public Int64 SaleId { get; set; }
 }
 
@@ -32,7 +33,7 @@ public class GetSaleByIdQueryHandler : IRequestHandler<GetSaleByIdQuery, Respons
 
         try
         {
-            var filter = query.SaleId.FindQueryBySaleId();
+            var filter = query.SaleId.FindQueryBySaleId(query.CompanyId);
             var entity = await _repository.FindOneAsync(filter);
 
             if (entity == null)

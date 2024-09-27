@@ -6,6 +6,13 @@ public class CreateSaleCommandValidator : AbstractValidator<CreateSaleCommand>
 {
     public CreateSaleCommandValidator()
     {
+        RuleFor(r => r.CompanyId)
+            .NotNull()
+            .NotEqual(0)
+            .WithMessage("Id da Filial é requerido.")
+            .GreaterThan(0)
+            .WithMessage("Id da Filial - não deve ser menor que 0");
+
         RuleFor(r => r.SaleId)
             .NotNull()
             .NotEqual(0)

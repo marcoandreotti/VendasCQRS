@@ -3,10 +3,12 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-
 [BsonCollection("SaleHistory")]
 public class SaleHistoryEntity : Document
 {
+    [BsonElement("company-id")]
+    public Int64 CompanyId { get; set; }
+
     [BsonElement("sale-id")]
     public Int64 SaleId { get; set; }
 
