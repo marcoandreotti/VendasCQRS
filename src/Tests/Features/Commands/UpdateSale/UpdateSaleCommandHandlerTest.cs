@@ -14,6 +14,7 @@ public class UpdateSaleCommandHandlerTest : BaseTest
 {
     private readonly Mock<IMongoRepository<SaleEntity>> _repositoryMock;
     private readonly Mock<IMongoRepository<SaleHistoryEntity>> _histRepositoryMock;
+
     private UpdateSaleCommandValidator UpdateSaleCommandValidator() => new UpdateSaleCommandValidator();
 
     public UpdateSaleCommandHandlerTest()
@@ -25,7 +26,6 @@ public class UpdateSaleCommandHandlerTest : BaseTest
     [Fact]
     public async Task HandleSuccessTest()
     {
-
         _repositoryMock.Setup(s => s.FindOneAsync(It.IsAny<Expression<Func<SaleEntity, bool>>>())).ReturnsAsync(SaleEntityMoq.SaleEntityResponse);
         _repositoryMock.Setup(s => s.ReplaceOne(It.IsAny<SaleEntity>()));
         _histRepositoryMock.Setup(s => s.InsertOneAsync(It.IsAny<SaleHistoryEntity>()));

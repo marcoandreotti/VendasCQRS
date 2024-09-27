@@ -42,10 +42,4 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Commands\DeleteSaleById\" />
-    <Folder Include="Features\Queries\GetAllSale\" />
-    <Folder Include="Features\Queries\GetSaleById\" />
-  </ItemGroup>
-
 </Project>
