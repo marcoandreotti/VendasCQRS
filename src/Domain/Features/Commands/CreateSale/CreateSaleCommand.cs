@@ -33,7 +33,7 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
 
         try
         {
-            await ExistsEntity(request.SaleId);
+            await ExistsEntity(request.SaleId, request.CompanyId);
 
             var entity = _mapper.Map<SaleEntity>(request);
 
@@ -63,6 +63,7 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
 
         await _histRepository.InsertOneAsync(new SaleHistoryEntity
         {
+            CompanyId = entity.CompanyId,
             SaleId = entity.SaleId,
             Message = msg,
             UserName = "Usuário logado",
@@ -94,9 +95,9 @@ public class CreateSaleCommandHandler : IRequestHandler<CreateSaleCommand, Respo
         return products;
     }
 
-    private async Task ExistsEntity(Int64 saleId)
+    private async Task ExistsEntity(Int64 saleId, Int64 companyId)
     {
-        var entity = await _repository.FindOneAsync(saleId.FindBySaleId());
+        var entity = await _repository.FindOneAsync(saleId.FindBySaleIds(companyId));
 
         if (entity != null)
             throw new ApiException("Venda já existe na base de dados", true);

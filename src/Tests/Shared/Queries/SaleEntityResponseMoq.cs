@@ -8,6 +8,7 @@ public class SaleEntityResponseMoq
     [
         new SaleEntity
         {
+            CompanyId = 1,
             SaleId = 1,
             SaleDate = DateTime.Now,
             Status = 1,
@@ -34,6 +35,7 @@ public class SaleEntityResponseMoq
 
     public static SaleEntity entity => new()
     {
+        CompanyId = 1,
         SaleId = 1,
         SaleDate = DateTime.Now,
         Status = 1,

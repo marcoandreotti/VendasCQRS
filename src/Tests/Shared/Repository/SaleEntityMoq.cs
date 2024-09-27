@@ -9,6 +9,7 @@ public class SaleEntityMoq
     {
         Id = ObjectId.GenerateNewId(),
         SaleDate = DateTime.Now,
+        CompanyId = 1,
         SaleId = 1,
         Customer = new CustomerEntity { CustomerId = 1, Name = "Teste 1" },
         Status = 1,

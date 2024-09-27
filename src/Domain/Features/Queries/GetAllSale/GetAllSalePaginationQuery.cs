@@ -12,6 +12,7 @@ namespace Domain.Features.Queries;
 
 public class GetAllSalePaginationQuery : IPagination, IRequest<PaginationResult<SaleQueryContract>>
 {
+    public Int64? CompanyId { get; set; }
     public Int64? SaleId { get; set; }
     public string? CustomerName { get; set; }
     public string? ProductName { get; set; }
@@ -53,6 +54,7 @@ public class GetAllSalePaginationQueryHandler : IRequestHandler<GetAllSalePagina
 
             var result = entities.Select(x => new SaleQueryContract
             {
+                CompanyId = x.CompanyId,
                 SaleId = x.SaleId,
                 Status = x.Status.ToEnum<SaleStatusEnum>(),
                 TotalSalePrice = x.TotalSalePrice,

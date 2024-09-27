@@ -7,6 +7,9 @@ namespace Domain.Entities;
 [BsonCollection("Sale")]
 public class SaleEntity : Document
 {
+    [BsonElement("company-id")]
+    public Int64 CompanyId { get; set; }
+
     [BsonElement("sale-id")]
     public Int64 SaleId { get; set; }
 

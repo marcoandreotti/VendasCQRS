@@ -11,6 +11,7 @@ namespace Domain.Features.Commands.DeleteSaleById;
 
 public class DeleteSaleByIdCommand : IRequest<Response<Unit>>
 {
+    public Int64 CompanyId { get; set; }
     public Int64 SaleId { get; set; }
 }
 
@@ -33,10 +34,10 @@ public class DeleteSaleByIdCommandHandler : IRequestHandler<DeleteSaleByIdComman
 
         try
         {
-            var filter = request.SaleId.FindQueryBySaleId();
+            var filter = request.SaleId.FindQueryBySaleId(request.CompanyId);
             await _repository.DeleteOneAsync(filter);
 
-            await SaveHistory(request.SaleId);
+            await SaveHistory(request.SaleId, request.CompanyId);
 
             Log.Information($"Compra Excluida - {this.GetType().Name}");
 
@@ -48,12 +49,13 @@ public class DeleteSaleByIdCommandHandler : IRequestHandler<DeleteSaleByIdComman
         }
     }
 
-    private async Task SaveHistory(Int64 saleId)
+    private async Task SaveHistory(Int64 saleId, Int64 comanyId)
     {
         string msg = "Compra excluida";
 
         await _histRepository.InsertOneAsync(new SaleHistoryEntity
         {
+            CompanyId= comanyId,
             SaleId = saleId,
             Message = msg,
             UserName = "Usuário logado",
