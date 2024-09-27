@@ -3,15 +3,17 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace Domain.Entities;
 
-
-[BsonCollection("BuyHistory")]
-public class BuyHistoryEntity : Document
+[BsonCollection("SaleHistory")]
+public class SaleHistoryEntity : Document
 {
-    [BsonElement("buy-id")]
-    public Int64 BuyId { get; set; }
+    [BsonElement("company-id")]
+    public Int64 CompanyId { get; set; }
 
-    [BsonElement("buy-date")]
-    public DateTime? BuyDate { get; set; }
+    [BsonElement("sale-id")]
+    public Int64 SaleId { get; set; }
+
+    [BsonElement("sale-date")]
+    public DateTime? SaleDate { get; set; }
 
     [BsonElement("user-name")]
     public string UserName { get; set; }

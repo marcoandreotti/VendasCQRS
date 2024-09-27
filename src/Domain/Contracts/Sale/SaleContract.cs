@@ -3,38 +3,40 @@ using Domain.Extensions;
 
 namespace Domain.Contracts;
 
-public class BuyContractBase
+public class SaleContractBase
 {
-    public Int64 BuyId { get; set; }
+    public Int64 CompanyId { get; set; }
 
-    public DateTime BuyDate { get; set; }
+    public Int64 SaleId { get; set; }
+
+    public DateTime SaleDate { get; set; }
 }
 
 
-public class BuyContract : BuyContractBase
+public class SaleContract : SaleContractBase
 {
     public Int64 CustomerId { get; set; }
 
     public List<ProductContract> Products { get; set; }
 }
 
-public class BuyUpdateContract : BuyContractBase
+public class SaleUpdateContract : SaleContractBase
 {
     public Int64 CustomerId { get; set; }
 
     public List<ProductUpdateContract> Products { get; set; }
 
-    public BuyStatusEnum Status { get; set; }
+    public SaleStatusEnum Status { get; set; }
 }
 
-public class BuyQueryContract : BuyContractBase
+public class SaleQueryContract : SaleContractBase
 {
     public CustomerContract Customer { get; set; }
     public List<ProductQueryContract> Products { get; set; }
 
-    public decimal TotalBuyPrice { get; set; }
+    public decimal TotalSalePrice { get; set; }
 
-    public BuyStatusEnum Status { get; set; }
+    public SaleStatusEnum Status { get; set; }
 
     public string StatusDescription => Status.GetDisplayName();
 }

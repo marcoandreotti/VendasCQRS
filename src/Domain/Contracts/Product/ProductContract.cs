@@ -13,14 +13,14 @@ public class ProductContract
 
 public class ProductUpdateContract : ProductContract
 {
-    public BuyItemStatusEnum Status { get; set; }
+    public SaleItemStatusEnum Status { get; set; }
 }
 
 public class ProductQueryContract : ProductContract
 {
     public string Name { get; set; }
 
-    public BuyItemStatusEnum Status { get; set; }
+    public SaleItemStatusEnum Status { get; set; }
 
     public string StatusDescription => Status.GetDisplayName();
 
